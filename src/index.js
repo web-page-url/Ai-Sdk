@@ -11,6 +11,7 @@ import { AgentSDK } from './agents/AgentSDK.js';
 import { WebSearchAgent } from './agents/WebSearchAgent.js';
 import { FileSearchAgent } from './agents/FileSearchAgent.js';
 import { ComputerUseAgent } from './agents/ComputerUseAgent.js';
+import { OpenAIAgentsSDK } from './agents/OpenAIAgentsSDK.js';
 import { ResponsesAPI } from './api/ResponsesAPI.js';
 
 // Load environment variables
@@ -85,6 +86,7 @@ const agentSDK = new AgentSDK();
 const webSearchAgent = new WebSearchAgent();
 const fileSearchAgent = new FileSearchAgent();
 const computerUseAgent = new ComputerUseAgent();
+const openaiAgentsSDK = new OpenAIAgentsSDK();
 const responsesAPI = new ResponsesAPI();
 
 // Routes
@@ -101,7 +103,11 @@ app.get('/', (req, res) => {
       'POST /api/computer-use': 'Computer automation tasks',
       'GET /api/agents': 'List available agents',
       'POST /api/agents/create': 'Create a custom agent',
-      'POST /api/agents/:id/execute': 'Execute an agent task'
+      'POST /api/agents/:id/execute': 'Execute an agent task',
+      'POST /api/openai-agents/run': 'Run OpenAI Agents SDK agents',
+      'POST /api/openai-agents/create': 'Create custom OpenAI agents',
+      'GET /api/openai-agents': 'List OpenAI agents',
+      'GET /openai-agents.html': 'OpenAI Agents SDK frontend interface'
     }
   });
 });
@@ -397,6 +403,90 @@ app.post('/api/agents/:id/execute', async (req, res) => {
   } catch (error) {
     console.error('Agent execution error:', error);
     res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+});
+
+// OpenAI Agents SDK endpoints
+app.post('/api/openai-agents/run', async (req, res) => {
+  try {
+    const { agentType, input } = req.body;
+    
+    if (!agentType || !input) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Agent type and input are required' 
+      });
+    }
+
+    console.log(`🤖 Running OpenAI Agent: ${agentType} with input: "${input}"`);
+    
+    const result = await openaiAgentsSDK.runAgent(agentType, input);
+    res.json(result);
+  } catch (error) {
+    console.error('OpenAI Agents SDK error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
+      details: error.message 
+    });
+  }
+});
+
+app.post('/api/openai-agents/create', async (req, res) => {
+  try {
+    const { name, instructions, model } = req.body;
+    
+    if (!name || !instructions) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Name and instructions are required' 
+      });
+    }
+
+    console.log(`🔧 Creating custom OpenAI Agent: ${name}`);
+    
+    const result = await openaiAgentsSDK.createCustomAgent(name, instructions, model);
+    res.json(result);
+  } catch (error) {
+    console.error('Custom agent creation error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/openai-agents', (req, res) => {
+  try {
+    const agents = openaiAgentsSDK.getAvailableAgents();
+    res.json({
+      success: true,
+      agents: agents,
+      count: agents.length
+    });
+  } catch (error) {
+    console.error('List agents error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/openai-agents/test', async (req, res) => {
+  try {
+    console.log('🧪 Running OpenAI Agents SDK test...');
+    const testResult = await openaiAgentsSDK.testAgents();
+    res.json(testResult);
+  } catch (error) {
+    console.error('Test agents error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Test failed', 
+      details: error.message 
+    });
   }
 });
 

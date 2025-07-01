@@ -18,9 +18,9 @@ const openai = new OpenAI({
 
 // Default configuration
 export const config = {
-  model: process.env.DEFAULT_MODEL || 'gpt-4',
+      model: process.env.DEFAULT_MODEL || 'gpt-3.5-turbo',
   temperature: parseFloat(process.env.TEMPERATURE) || 0.7,
-  max_tokens: parseInt(process.env.MAX_TOKENS) || 2000,
+      max_tokens: parseInt(process.env.MAX_TOKENS) || 1000,
 };
 
 // Helper function to validate and get model

@@ -20,6 +20,7 @@
   "author": "Anubhav",
   "license": "MIT",
   "dependencies": {
+    "@openai/agents": "^0.0.10",
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
@@ -33,7 +34,8 @@
     "pdf2json": "^3.1.6",
     "puppeteer": "^22.8.2",
     "uuid": "^9.0.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
