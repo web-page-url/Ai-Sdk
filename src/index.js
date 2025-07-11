@@ -13,6 +13,8 @@ import { FileSearchAgent } from './agents/FileSearchAgent.js';
 import { ComputerUseAgent } from './agents/ComputerUseAgent.js';
 import { OpenAIAgentsSDK } from './agents/OpenAIAgentsSDK.js';
 import { ResponsesAPI } from './api/ResponsesAPI.js';
+import TextToSpeechAgent from './agents/TextToSpeechAgent.js';
+import TextToImageAgent from './agents/TextToImageAgent.js';
 
 // Load environment variables
 dotenv.config();
@@ -88,6 +90,8 @@ const fileSearchAgent = new FileSearchAgent();
 const computerUseAgent = new ComputerUseAgent();
 const openaiAgentsSDK = new OpenAIAgentsSDK();
 const responsesAPI = new ResponsesAPI();
+const textToSpeechAgent = new TextToSpeechAgent(process.env.OPENAI_API_KEY);
+const textToImageAgent = new TextToImageAgent(process.env.OPENAI_API_KEY);
 
 // Routes
 app.get('/', (req, res) => {
@@ -101,13 +105,19 @@ app.get('/', (req, res) => {
       'POST /api/file-search': 'Search within uploaded files',
       'POST /api/chat-pdf': 'Chat with PDF documents for summaries and Q&A',
       'POST /api/computer-use': 'Computer automation tasks',
+      'POST /api/text-to-speech': 'Convert text to speech audio 🗣️',
+      'GET /api/text-to-speech/voices': 'Get available TTS voices',
+      'POST /api/text-to-image': 'Generate images from text descriptions 🖼️',
+      'GET /api/text-to-image/models': 'Get available image generation models',
       'GET /api/agents': 'List available agents',
       'POST /api/agents/create': 'Create a custom agent',
       'POST /api/agents/:id/execute': 'Execute an agent task',
       'POST /api/openai-agents/run': 'Run OpenAI Agents SDK agents',
       'POST /api/openai-agents/create': 'Create custom OpenAI agents',
       'GET /api/openai-agents': 'List OpenAI agents',
-      'GET /openai-agents.html': 'OpenAI Agents SDK frontend interface'
+      'GET /openai-agents.html': 'OpenAI Agents SDK frontend interface',
+      'GET /text-to-speech.html': 'Text-to-Speech frontend interface',
+      'GET /text-to-image.html': 'Text-to-Image frontend interface'
     }
   });
 });
@@ -485,6 +495,125 @@ app.get('/api/openai-agents/test', async (req, res) => {
     res.status(500).json({ 
       success: false,
       error: 'Test failed', 
+      details: error.message 
+    });
+  }
+});
+
+// Text-to-Speech endpoints
+app.post('/api/text-to-speech', async (req, res) => {
+  try {
+    const { text, voice, model, speed } = req.body;
+    
+    if (!text) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Text is required' 
+      });
+    }
+
+    console.log(`🗣️ Converting text to speech: "${text.substring(0, 50)}..."`);
+    
+    const result = await textToSpeechAgent.convertTextToSpeech(text, {
+      voice,
+      model,
+      speed: speed ? parseFloat(speed) : undefined
+    });
+
+    if (result.success) {
+      // Set appropriate headers for audio response
+      res.setHeader('Content-Type', `audio/${result.format}`);
+      res.setHeader('Content-Disposition', `attachment; filename="speech.${result.format}"`);
+      res.send(result.audioBuffer);
+    } else {
+      res.status(500).json(result);
+    }
+  } catch (error) {
+    console.error('Text-to-Speech error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/text-to-speech/voices', (req, res) => {
+  try {
+    const voices = textToSpeechAgent.getAvailableVoices();
+    const models = textToSpeechAgent.getAvailableModels();
+    
+    res.json({
+      success: true,
+      voices,
+      models
+    });
+  } catch (error) {
+    console.error('Get TTS voices error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
+      details: error.message 
+    });
+  }
+});
+
+// Text-to-Image endpoints
+app.post('/api/text-to-image', async (req, res) => {
+  try {
+    const { prompt, model, size, quality, style, n } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Prompt is required' 
+      });
+    }
+
+    console.log(`🖼️ Generating image from prompt: "${prompt.substring(0, 50)}..."`);
+    
+    const result = await textToImageAgent.generateImage(prompt, {
+      model,
+      size,
+      quality,
+      style,
+      n: n ? parseInt(n) : undefined
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error('Text-to-Image error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/text-to-image/models', (req, res) => {
+  try {
+    const models = textToImageAgent.getAvailableModels();
+    const qualityOptions = textToImageAgent.getQualityOptions();
+    const styleOptions = textToImageAgent.getStyleOptions();
+    const suggestedPrompts = textToImageAgent.getSuggestedPrompts();
+    
+    res.json({
+      success: true,
+      models,
+      qualityOptions,
+      styleOptions,
+      suggestedPrompts,
+      sizes: {
+        'dall-e-2': textToImageAgent.getAvailableSizes('dall-e-2'),
+        'dall-e-3': textToImageAgent.getAvailableSizes('dall-e-3')
+      }
+    });
+  } catch (error) {
+    console.error('Get image models error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error', 
       details: error.message 
     });
   }
