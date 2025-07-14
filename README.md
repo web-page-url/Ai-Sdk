@@ -1,345 +1,164 @@
-# 🤖 AI Agents SDK
+# AI Agents SDK
 
-A comprehensive Node.js application for building intelligent AI agents using OpenAI's API. Create agents that can search the web, process files, automate computer tasks, and communicate with each other.
+A comprehensive Node.js application for building AI agents with OpenAI API integration.
 
-## ✨ Features
+## Features
 
-### 🕵️‍♂️ Web Search Agent
-- Search the internet for real-time information
-- Support for multiple search providers (DuckDuckGo, Bing, Google)
-- AI-powered content extraction and synthesis
-- Automatic result enrichment
+- 🤖 **OpenAI Agents SDK**: Create and manage custom AI agents
+- 📄 **PDF Chat**: Upload and chat with PDF documents
+- 🗣️ **Text-to-Speech**: Convert text to high-quality speech with multiple voices
+- 🖼️ **Text-to-Image**: Generate images from text descriptions using DALL-E
+- 🌐 **Web Search**: Intelligent web search capabilities
+- 💻 **Computer Use**: Automated computer interaction tasks
+- 📁 **File Analysis**: Upload and analyze various file types
 
-### 📂 File Search Agent  
-- Process multiple file formats (PDF, DOCX, XLSX, TXT, CSV, JSON)
-- Intelligent content extraction and analysis
-- Search within documents
-- AI-powered document insights
+## Live Demo
 
-### 🖥️ Computer Use Agent
-- Automate file system operations
-- Launch applications
-- Web browser automation with Puppeteer
-- Safe command execution with security checks
-- Cross-platform support (Windows, macOS, Linux)
+🚀 **Live Application**: https://ai-sdk.onrender.com
 
-### 📡 Responses API
-- Direct OpenAI API integration
-- Multi-turn conversations
-- Streaming responses
-- Content generation and analysis
-- Q&A functionality
+## Quick Start
 
-### 🧑‍💻 Agent SDK
-- Create custom AI agents with specialized capabilities
-- Task analysis and execution planning
-- Tool integration and management
-- Agent-to-agent communication
-- Memory and conversation handling
+### Local Development
 
-### 🤖 **NEW: OpenAI Agents SDK**
-- Official OpenAI Agents SDK integration
-- Multi-agent orchestration with intelligent handoffs
-- Triage agent for automatic task routing
-- Specialized tutor agents (History, Math)
-- Custom agent creation with tools
-- Built-in tools for calculations and fact retrieval
-- Interactive web interface for agent management
-
-### 📄 **NEW: Chat PDF Feature**
-Upload PDF documents and interact with AI to:
-- **Summarize documents** - Get comprehensive summaries of your PDFs
-- **Ask questions** - Query specific information from the document
-- **Extract key insights** - Identify main topics, key points, and important details
-- **Interactive chat** - Natural conversation about document content
-
-**Access the Chat PDF interface at:** `http://localhost:3000/chat-pdf.html`
-
-### 🤖 **NEW: OpenAI Agents Interface**
-Interactive web interface for the official OpenAI Agents SDK:
-- **Manage agents** - Select between Triage, History, and Math tutors
-- **Create custom agents** - Build specialized agents with custom instructions
-- **Agent orchestration** - Watch intelligent handoffs between agents
-- **Tool integration** - See agents use built-in tools for calculations and facts
-
-**Access the OpenAI Agents interface at:** `http://localhost:3000/openai-agents.html`
-
-## 🚀 Quick Start
-
-### 1. Clone or Download
+1. **Clone the repository**
 ```bash
 git clone <your-repo-url>
-cd ai-agents-sdk
+cd Ai-Sdk
 ```
 
-### 2. Install Dependencies
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-### 3. Environment Setup
+3. **Set up environment variables**
 Create a `.env` file in the root directory:
 ```env
-# OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
-
-# Server Configuration
 PORT=3000
 NODE_ENV=development
-
-# File Upload Configuration
-MAX_FILE_SIZE=10485760  # 10MB
-UPLOAD_DIR=./uploads
-
-# Agent Configuration
-DEFAULT_MODEL=gpt-3.5-turbo
-MAX_TOKENS=1000
+DEFAULT_MODEL=gpt-4o-mini
+MAX_TOKENS=2000
 TEMPERATURE=0.7
-
-# Optional: Additional Search API Keys
-BING_SEARCH_API_KEY=your_bing_search_key_here
-GOOGLE_SEARCH_API_KEY=your_google_search_key_here
-GOOGLE_SEARCH_ENGINE_ID=your_search_engine_id_here
+MAX_FILE_SIZE=10485760
+UPLOAD_DIR=./uploads
 ```
 
-### 4. Start the Server
+4. **Start the server**
 ```bash
-# Development mode with auto-reload
-npm run dev
-
-# Production mode
 npm start
 ```
 
-### 5. Test the Application
-```bash
-npm test
-```
+Visit `http://localhost:3000` to access the application.
 
-Visit `http://localhost:3000` to see the API documentation.
+### Production Deployment on Render
 
-## 📚 API Endpoints
+This application is configured for easy deployment on [Render](https://render.com).
 
-### General Chat
-```http
-POST /api/chat
-Content-Type: application/json
+#### Automatic Deployment
 
-{
-  "message": "Hello! How can AI agents help me?",
-  "model": "gpt-4",
-  "temperature": 0.7
-}
-```
+1. **Fork/Clone this repository** to your GitHub account
 
-### Web Search
-```http
-POST /api/web-search
-Content-Type: application/json
+2. **Connect to Render**:
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New" → "Web Service"
+   - Connect your GitHub repository
 
-{
-  "query": "latest AI developments 2024",
-  "maxResults": 5
-}
-```
+3. **Configure the service**:
+   - **Name**: `ai-sdk`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: Free (or paid for better performance)
 
-### File Upload & Analysis
-```http
-POST /api/file-upload
-Content-Type: multipart/form-data
+4. **Set Environment Variables** in Render Dashboard:
+   ```
+   OPENAI_API_KEY=your_actual_openai_api_key
+   NODE_ENV=production
+   DEFAULT_MODEL=gpt-4o-mini
+   MAX_TOKENS=2000
+   TEMPERATURE=0.7
+   MAX_FILE_SIZE=10485760
+   UPLOAD_DIR=./uploads
+   ```
 
-file: [your-file.pdf]
-```
+5. **Deploy**: Click "Create Web Service"
 
-### File Search
-```http
-POST /api/file-search
-Content-Type: application/json
+#### Manual Deployment Configuration
 
-{
-  "query": "contract due date",
-  "filePath": "./uploads/contract.pdf"
-}
-```
+The repository includes a `render.yaml` file for infrastructure-as-code deployment. Simply:
 
-### Computer Automation
-```http
-POST /api/computer-use
-Content-Type: application/json
+1. Set your `OPENAI_API_KEY` in Render's environment variables
+2. Deploy from the Render dashboard
 
-{
-  "action": "create_folder",
-  "parameters": {
-    "folderPath": "./new-project"
-  }
-}
-```
+## API Endpoints
 
-### Chat PDF
-```http
-POST /api/chat-pdf
-Content-Type: application/json
+### Core Features
+- `POST /api/chat` - General chat with AI
+- `POST /api/web-search` - Web search capabilities  
+- `POST /api/file-upload` - Upload and analyze files
+- `POST /api/chat-pdf` - Chat with PDF documents
 
-{
-  "message": "Summarize this document",
-  "filePath": "./uploads/contract.pdf",
-  "fileName": "contract.pdf"
-}
-```
+### Text-to-Speech
+- `POST /api/text-to-speech` - Convert text to speech audio 🗣️
+- `GET /api/text-to-speech/voices` - Get available TTS voices
 
-### Agent Management
-```http
-# List all agents
-GET /api/agents
-
-# Create a new agent
-POST /api/agents/create
-Content-Type: application/json
-
-{
-  "name": "CustomerSupportAgent",
-  "description": "Specialized in customer service tasks",
-  "capabilities": ["web_search", "file_search"],
-  "tools": ["web_search"],
-  "systemPrompt": "You are a helpful customer support agent..."
-}
-
-# Execute agent task
-POST /api/agents/{agent-id}/execute
-Content-Type: application/json
-
-{
-  "task": "Help me find information about our refund policy",
-  "context": {
-    "query": "refund policy information"
-  }
-}
-```
+### Text-to-Image  
+- `POST /api/text-to-image` - Generate images from text descriptions 🖼️
+- `GET /api/text-to-image/models` - Get available image generation models
 
 ### OpenAI Agents SDK
-```http
-# Run an OpenAI agent (triage, history, math, or custom)
-POST /api/openai-agents/run
-Content-Type: application/json
+- `POST /api/openai-agents/run` - Run OpenAI Agents SDK agents
+- `POST /api/openai-agents/create` - Create custom OpenAI agents
+- `GET /api/openai-agents` - List OpenAI agents
 
-{
-  "agentType": "triage",
-  "input": "What is the capital of France?"
-}
+### Agent Management
+- `GET /api/agents` - List available agents
+- `POST /api/agents/create` - Create a custom agent
+- `POST /api/agents/:id/execute` - Execute an agent task
 
-# Create a custom OpenAI agent
-POST /api/openai-agents/create
-Content-Type: application/json
+## Frontend Interfaces
 
-{
-  "name": "Science Tutor",
-  "instructions": "You provide help with science questions and explain concepts clearly.",
-  "model": "gpt-4"
-}
+- **Main Dashboard**: `/` - Overview of all features
+- **PDF Chat**: `/chat-pdf.html` - Upload and chat with PDFs
+- **Text-to-Speech**: `/text-to-speech.html` - Convert text to speech
+- **Text-to-Image**: `/text-to-image.html` - Generate images from text
+- **OpenAI Agents**: `/openai-agents.html` - Manage OpenAI agents
+- **Code Explanation**: `/code-explanation.html` - Analyze and explain code
 
-# List all available OpenAI agents
-GET /api/openai-agents
+## Environment Variables
 
-# Test the OpenAI Agents SDK
-GET /api/openai-agents/test
-```
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `OPENAI_API_KEY` | Your OpenAI API key | - | ✅ |
+| `PORT` | Server port | 3000 | ❌ |
+| `NODE_ENV` | Environment mode | development | ❌ |
+| `DEFAULT_MODEL` | Default OpenAI model | gpt-4o-mini | ❌ |
+| `MAX_TOKENS` | Maximum tokens per request | 2000 | ❌ |
+| `TEMPERATURE` | AI response creativity | 0.7 | ❌ |
+| `MAX_FILE_SIZE` | Maximum upload file size | 10485760 | ❌ |
+| `UPLOAD_DIR` | File upload directory | ./uploads | ❌ |
 
-## 🛠️ Available Actions
+## Technology Stack
 
-### Computer Use Agent Actions
+- **Backend**: Node.js, Express.js
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **AI Integration**: OpenAI API (GPT, DALL-E, TTS)
+- **File Processing**: Multer, PDF2JSON, Mammoth
+- **Web Scraping**: Puppeteer, Cheerio
+- **Automation**: Computer Use Agent
 
-| Action | Description | Parameters |
-|--------|-------------|------------|
-| `open_app` | Launch an application | `appName` |
-| `open_file` | Open file with default app | `filePath` |
-| `rename_file` | Rename a file or folder | `oldPath`, `newPath` |
-| `create_folder` | Create a new directory | `folderPath` |
-| `list_files` | List directory contents | `directory` |
-| `copy_file` | Copy a file | `source`, `destination` |
-| `move_file` | Move a file | `source`, `destination` |
-| `delete_file` | Delete a file or folder | `filePath` |
-| `browse_web` | Automate web browsing | `url`, `options` |
-| `take_screenshot` | Capture screenshot | `outputPath` |
-| `get_system_info` | Get system information | none |
+## License
 
-### File Search Agent Formats
+MIT License - see LICENSE file for details.
 
-- **PDF Documents** (.pdf)
-- **Word Documents** (.docx, .doc) 
-- **Excel Spreadsheets** (.xlsx, .xls)
-- **Text Files** (.txt)
-- **CSV Files** (.csv)
-- **JSON Files** (.json)
+## Support
 
-## 🎯 Example Use Cases
+For issues and questions:
+1. Check the GitHub issues
+2. Review the API documentation at the root endpoint
+3. Ensure your OpenAI API key is properly configured
 
-### 1. Travel Booking Agent
-```javascript
-const agentResult = await agentSDK.createAgent({
-  name: 'TravelAgent',
-  description: 'Helps with travel planning and booking',
-  capabilities: ['web_search', 'information_gathering'],
-  tools: ['web_search'],
-  systemPrompt: 'You are a travel specialist. Help users plan trips...'
-});
+---
 
-const response = await agentSDK.executeAgent(
-  agentResult.agent.id,
-  'Find the best flights to Tokyo next month',
-  { query: 'flights to Tokyo best deals' }
-);
-```
-
-### 2. Document Analysis Agent
-```javascript
-const agentResult = await agentSDK.createAgent({
-  name: 'DocumentAnalyzer',
-  description: 'Analyzes and extracts information from documents',
-  capabilities: ['file_search', 'document_analysis'],
-  tools: ['file_search']
-});
-
-const response = await agentSDK.executeAgent(
-  agentResult.agent.id,
-  'What are the key terms in this contract?',
-  { filePath: './uploads/contract.pdf', query: 'key terms conditions' }
-);
-```
-
-### 3. Research Assistant Agent
-```javascript
-const agentResult = await agentSDK.createAgent({
-  name: 'ResearchAssistant',
-  description: 'Conducts research and gathers information',
-  capabilities: ['web_search', 'content_synthesis'],
-  tools: ['web_search'],
-  systemPrompt: 'You are a research expert. Gather comprehensive information...'
-});
-```
-
-## 🔧 Advanced Configuration
-
-### Custom Search Providers
-Add your API keys to enable additional search providers:
-
-```env
-# Bing Search API
-BING_SEARCH_API_KEY=your_bing_key
-
-# Google Custom Search
-GOOGLE_SEARCH_API_KEY=your_google_key
-GOOGLE_SEARCH_ENGINE_ID=your_engine_id
-```
-
-### Agent Personality Configuration
-```javascript
-const agent = await agentSDK.createAgent({
-  name: 'FriendlyHelper',
-  personality: 'enthusiastic',
-  temperature: 0.8,
-  maxTokens: 1500,
-  systemPrompt: 'You are an enthusiastic and helpful assistant...'
-});
-```#   A i - S d k 
- 
- 
+**🚀 Live Demo**: https://ai-sdk.onrender.com
