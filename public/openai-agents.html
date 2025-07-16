@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Agents SDK Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8ed;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .agent-card {
+            background: #f8fafc;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.1);
+        }
+
+        .agent-card.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .agent-card h3 {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .agent-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .results-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .conversation {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e1e8ed;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.agent {
+            background: #f8fafc;
+            border: 1px solid #e1e8ed;
+        }
+
+        .message .sender {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .message .content {
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tools-section {
+            background: #fff8e1;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tools-section h4 {
+            color: #ff8f00;
+            margin-bottom: 10px;
+        }
+
+        .tool-item {
+            background: white;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e8ed;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin: 20px 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            color: black;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-link {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 OpenAI Agents SDK</h1>
+            <p>Build, orchestrate, and manage intelligent AI agents with advanced capabilities</p>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" target="_blank">🏠 Home</a>
+                <a href="chat-pdf.html" class="nav-link" target="_blank">📄 Chat PDF</a>
+                <a href="text-to-image.html" class="nav-link" target="_blank">🖼️ Text to Image</a>
+                <a href="text-to-speech.html" class="nav-link" target="_blank">🗣️ Text to Speech</a>
+                <a href="openai-agents.html" class="nav-link active" target="_blank">🤖 OpenAI Agents</a>
+                <a href="code-explanation.html" class="nav-link" target="_blank">💻 Code Explanation</a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <!-- Agent Management Section -->
+            <div class="section">
+                <h2>
+                    <span class="icon">👥</span>
+                    Agent Management
+                </h2>
+                
+                <div class="tab-container">
+                    <button class="tab active" onclick="switchTab('predefined')">Predefined Agents</button>
+                    <button class="tab" onclick="switchTab('custom')">Create Custom</button>
+                </div>
+
+                <div id="predefined" class="tab-content active">
+                    <div class="agent-card" id="triage-agent" onclick="selectAgent('triage')">
+                        <h3>🧠 Triage Agent</h3>
+                        <p>Routes questions to specialized agents (History/Math tutors)</p>
+                        <div class="agent-actions">
+                            <button class="btn btn-success" onclick="runAgent('triage')">Run Agent</button>
+                        </div>
+                    </div>
+
+                    <div class="agent-card" id="history-agent" onclick="selectAgent('history')">
+                        <h3>📚 History Tutor</h3>
+                        <p>Provides assistance with historical queries and explains important events</p>
+                        <div class="agent-actions">
+                            <button class="btn btn-success" onclick="runAgent('history')">Run Agent</button>
+                        </div>
+                    </div>
+
+                    <div class="agent-card" id="math-agent" onclick="selectAgent('math')">
+                        <h3>🔢 Math Tutor</h3>
+                        <p>Helps with math problems and explains reasoning step by step</p>
+                        <div class="agent-actions">
+                            <button class="btn btn-success" onclick="runAgent('math')">Run Agent</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="custom" class="tab-content">
+                    <form id="customAgentForm">
+                        <div class="form-group">
+                            <label for="agentName">Agent Name:</label>
+                            <input type="text" id="agentName" placeholder="e.g., Science Tutor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="agentInstructions">Instructions:</label>
+                            <textarea id="agentInstructions" placeholder="Define the agent's role and behavior..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="agentModel">Model:</label>
+                            <select id="agentModel">
+                                <option value="gpt-4">GPT-4</option>
+                                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Create Custom Agent</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Interaction Section -->
+            <div class="section">
+                <h2>
+                    <span class="icon">💬</span>
+                    Agent Interaction
+                </h2>
+                
+                <div class="form-group">
+                    <label for="selectedAgent">Selected Agent:</label>
+                    <select id="selectedAgent">
+                        <option value="triage">Triage Agent (Smart Routing)</option>
+                        <option value="history">History Tutor</option>
+                        <option value="math">Math Tutor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userInput">Your Question:</label>
+                    <textarea id="userInput" placeholder="Ask your question here... (e.g., 'What is the capital of France?' or 'Solve 2x + 5 = 15')"></textarea>
+                </div>
+
+                <div class="tools-section">
+                    <h4>🛠️ Available Tools</h4>
+                    <div class="tool-item">
+                        <strong>History Fun Fact:</strong> Provides interesting historical trivia
+                    </div>
+                    <div class="tool-item">
+                        <strong>Math Calculator:</strong> Performs mathematical calculations
+                    </div>
+                </div>
+
+                <button class="btn" onclick="runSelectedAgent()">
+                    <span class="icon">🚀</span>
+                    Run Agent
+                </button>
+                <button class="btn btn-secondary" onclick="clearConversation()">
+                    <span class="icon">🗑️</span>
+                    Clear
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section results-section">
+                <h2>
+                    <span class="icon">📊</span>
+                    Conversation & Results
+                </h2>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Agent is thinking...</p>
+                </div>
+
+                <div class="conversation" id="conversation">
+                    <div class="message agent">
+                        <div class="sender">System</div>
+                        <div class="content">Welcome! Select an agent and ask a question to get started. The Triage Agent will automatically route your question to the most appropriate specialist.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedAgentType = 'triage';
+        let customAgents = [];
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function selectAgent(agentType) {
+            // Remove active class from all agent cards
+            document.querySelectorAll('.agent-card').forEach(card => card.classList.remove('active'));
+            
+            // Add active class to selected agent
+            document.getElementById(agentType + '-agent').classList.add('active');
+            
+            // Update selected agent
+            selectedAgentType = agentType;
+            document.getElementById('selectedAgent').value = agentType;
+        }
+
+        async function runAgent(agentType) {
+            const input = document.getElementById('userInput').value.trim();
+            if (!input) {
+                alert('Please enter a question first!');
+                return;
+            }
+
+            selectAgent(agentType);
+            await runSelectedAgent();
+        }
+
+        async function runSelectedAgent() {
+            const input = document.getElementById('userInput').value.trim();
+            const agentType = document.getElementById('selectedAgent').value;
+
+            if (!input) {
+                alert('Please enter a question!');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            
+            // Add user message to conversation
+            addMessage('user', 'You', input);
+
+            try {
+                const response = await fetch('/api/openai-agents/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        agentType: agentType,
+                        input: input
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Add agent response to conversation
+                    addMessage('agent', result.finalAgent || 'Agent', result.output);
+                    
+                    // Show additional info if available
+                    if (result.handoffs && result.handoffs.length > 0) {
+                        addMessage('agent', 'System', `🔀 Handoffs: ${result.handoffs.join(' → ')}`);
+                    }
+                    
+                    if (result.toolsUsed && result.toolsUsed.length > 0) {
+                        addMessage('agent', 'System', `🛠️ Tools used: ${result.toolsUsed.join(', ')}`);
+                    }
+                } else {
+                    addMessage('agent', 'Error', result.error || 'An error occurred');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('agent', 'Error', 'Failed to communicate with the server');
+            } finally {
+                // Hide loading
+                document.getElementById('loading').classList.remove('show');
+                
+                // Clear input
+                document.getElementById('userInput').value = '';
+            }
+        }
+
+        function addMessage(type, sender, content) {
+            const conversation = document.getElementById('conversation');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            messageDiv.innerHTML = `
+                <div class="sender">${sender}</div>
+                <div class="content">${content}</div>
+            `;
+            
+            conversation.appendChild(messageDiv);
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        function clearConversation() {
+            const conversation = document.getElementById('conversation');
+            conversation.innerHTML = `
+                <div class="message agent">
+                    <div class="sender">System</div>
+                    <div class="content">Conversation cleared. Ask a new question to get started!</div>
+                </div>
+            `;
+        }
+
+        // Handle custom agent form submission
+        document.getElementById('customAgentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('agentName').value;
+            const instructions = document.getElementById('agentInstructions').value;
+            const model = document.getElementById('agentModel').value;
+
+            try {
+                const response = await fetch('/api/openai-agents/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        instructions: instructions,
+                        model: model
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Custom agent created successfully!');
+                    
+                    // Add to custom agents list
+                    customAgents.push(result.agent);
+                    
+                    // Clear form
+                    document.getElementById('customAgentForm').reset();
+                    
+                    // Update UI to show custom agent
+                    updateCustomAgentsList();
+                } else {
+                    alert('Error creating agent: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to create custom agent');
+            }
+        });
+
+        function updateCustomAgentsList() {
+            // Add custom agents to the select dropdown
+            const select = document.getElementById('selectedAgent');
+            
+            // Remove existing custom options
+            const customOptions = select.querySelectorAll('option[data-custom="true"]');
+            customOptions.forEach(option => option.remove());
+            
+            // Add new custom agents
+            customAgents.forEach((agent, index) => {
+                const option = document.createElement('option');
+                option.value = `custom-${index}`;
+                option.textContent = agent.name;
+                option.setAttribute('data-custom', 'true');
+                select.appendChild(option);
+            });
+        }
+
+        // Handle Enter key in textarea
+        document.getElementById('userInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                runSelectedAgent();
+            }
+        });
+    </script>
+</body>
+</html> 

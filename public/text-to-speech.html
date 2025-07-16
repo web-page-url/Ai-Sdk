@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗣️ Text-to-Speech - AI Agents SDK</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .nav-link {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #2b6cb0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group select,
+        .form-group input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-container input[type="range"] {
+            flex: 1;
+            padding: 0;
+            border: none;
+        }
+
+        .range-value {
+            background: #4299e1;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4299e1, #2b6cb0);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(66, 153, 225, 0.3);
+        }
+
+        .generate-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #4299e1;
+            margin: 20px 0;
+        }
+
+        .loading.hidden {
+            display: none;
+        }
+
+        .loading i {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result.hidden {
+            display: none;
+        }
+
+        .audio-player {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .audio-player audio {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .download-btn {
+            background: #38a169;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #2f855a;
+        }
+
+        .error {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .error.hidden {
+            display: none;
+        }
+
+        .info {
+            background: #bee3f8;
+            border: 2px solid #63b3ed;
+            color: #2c5282;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .pricing-info {
+            background: #fffbeb;
+            border: 2px solid #f6e05e;
+            color: #744210;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            color: black;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-link {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗣️ Text-to-Speech</h1>
+            <p>Convert any text to natural-sounding speech using OpenAI's TTS API</p>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" target="_blank">🏠 Home</a>
+                <a href="chat-pdf.html" class="nav-link" target="_blank">📄 Chat PDF</a>
+                <a href="text-to-image.html" class="nav-link" target="_blank">🖼️ Text to Image</a>
+                <a href="text-to-speech.html" class="nav-link active" target="_blank">🗣️ Text to Speech</a>
+                <a href="openai-agents.html" class="nav-link" target="_blank">🤖 OpenAI Agents</a>
+                <a href="code-explanation.html" class="nav-link" target="_blank">💻 Code Explanation</a>
+            </div>
+        </nav>
+
+        <div class="info">
+            <strong>💡 How it works:</strong> Type or paste your text below, choose a voice and settings, then generate high-quality speech audio that you can play or download.
+        </div>
+
+        <div class="pricing-info">
+            <strong>💰 Cost Information:</strong> 
+            TTS-1: $0.015 per 1K characters | TTS-1-HD: $0.030 per 1K characters
+        </div>
+
+        <form id="ttsForm">
+            <div class="form-group">
+                <label for="text">Text to Convert:</label>
+                <textarea 
+                    id="text" 
+                    name="text" 
+                    placeholder="Enter the text you want to convert to speech (max 4,096 characters)..."
+                    maxlength="4096"
+                    required
+                ></textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span> / 4,096 characters
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="voice">Voice:</label>
+                    <select id="voice" name="voice">
+                        <option value="">Loading voices...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="model">Quality:</label>
+                    <select id="model" name="model">
+                        <option value="">Loading models...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="speed">Speech Speed:</label>
+                <div class="range-container">
+                    <input 
+                        type="range" 
+                        id="speed" 
+                        name="speed" 
+                        min="0.25" 
+                        max="4.0" 
+                        step="0.25" 
+                        value="1.0"
+                    >
+                    <span class="range-value" id="speedValue">1.0x</span>
+                </div>
+            </div>
+
+            <button type="submit" class="generate-btn" id="generateBtn">
+                <i class="fas fa-microphone"></i> Generate Speech
+            </button>
+        </form>
+
+        <div class="loading hidden" id="loading">
+            <i class="fas fa-spinner"></i>
+            <span>Converting text to speech...</span>
+        </div>
+
+        <div class="result hidden" id="result">
+            <h3><i class="fas fa-volume-up"></i> Generated Audio</h3>
+            <div class="audio-player" id="audioPlayer">
+                <!-- Audio player will be inserted here -->
+            </div>
+        </div>
+
+        <div class="error hidden" id="error">
+            <!-- Error messages will appear here -->
+        </div>
+    </div>
+
+    <script>
+        let voices = [];
+        let models = [];
+        let currentAudioBlob = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadVoicesAndModels();
+            setupEventListeners();
+        });
+
+        // Load available voices and models
+        async function loadVoicesAndModels() {
+            try {
+                const response = await fetch('/api/text-to-speech/voices');
+                const data = await response.json();
+                
+                if (data.success) {
+                    voices = data.voices;
+                    models = data.models;
+                    
+                    populateVoiceSelect();
+                    populateModelSelect();
+                }
+            } catch (error) {
+                console.error('Error loading voices and models:', error);
+                showError('Failed to load voice options. Please refresh the page.');
+            }
+        }
+
+        // Populate voice select dropdown
+        function populateVoiceSelect() {
+            const voiceSelect = document.getElementById('voice');
+            voiceSelect.innerHTML = '';
+            
+            voices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.value;
+                option.textContent = voice.name;
+                if (voice.value === 'alloy') option.selected = true; // Default selection
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        // Populate model select dropdown
+        function populateModelSelect() {
+            const modelSelect = document.getElementById('model');
+            modelSelect.innerHTML = '';
+            
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.value;
+                option.textContent = `${model.name} - ${model.description}`;
+                if (model.value === 'tts-1') option.selected = true; // Default selection
+                modelSelect.appendChild(option);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Character count
+            const textArea = document.getElementById('text');
+            const charCount = document.getElementById('charCount');
+            
+            textArea.addEventListener('input', () => {
+                charCount.textContent = textArea.value.length;
+                
+                // Change color based on character count
+                if (textArea.value.length > 3500) {
+                    charCount.style.color = '#e53e3e';
+                } else if (textArea.value.length > 3000) {
+                    charCount.style.color = '#d69e2e';
+                } else {
+                    charCount.style.color = '#666';
+                }
+            });
+
+            // Speed slider
+            const speedSlider = document.getElementById('speed');
+            const speedValue = document.getElementById('speedValue');
+            
+            speedSlider.addEventListener('input', () => {
+                speedValue.textContent = speedSlider.value + 'x';
+            });
+
+            // Form submission
+            document.getElementById('ttsForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        // Handle form submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                text: formData.get('text'),
+                voice: formData.get('voice'),
+                model: formData.get('model'),
+                speed: formData.get('speed')
+            };
+
+            // Validate input
+            if (!data.text.trim()) {
+                showError('Please enter some text to convert.');
+                return;
+            }
+
+            if (data.text.length > 4096) {
+                showError('Text is too long. Maximum length is 4,096 characters.');
+                return;
+            }
+
+            await generateSpeech(data);
+        }
+
+        // Generate speech
+        async function generateSpeech(data) {
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const error = document.getElementById('error');
+
+            // Reset UI
+            hideElement(result);
+            hideElement(error);
+            showElement(loading);
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            try {
+                const response = await fetch('/api/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    currentAudioBlob = audioBlob;
+                    displayAudioResult(audioBlob, data);
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate speech');
+                }
+            } catch (err) {
+                console.error('TTS Error:', err);
+                showError(err.message || 'An error occurred while generating speech. Please try again.');
+            } finally {
+                hideElement(loading);
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-microphone"></i> Generate Speech';
+            }
+        }
+
+        // Display audio result
+        function displayAudioResult(audioBlob, requestData) {
+            const result = document.getElementById('result');
+            const audioPlayer = document.getElementById('audioPlayer');
+            
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            audioPlayer.innerHTML = `
+                <h4>🎵 Voice: ${getVoiceName(requestData.voice)} | Speed: ${requestData.speed}x</h4>
+                <audio controls preload="auto">
+                    <source src="${audioUrl}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <div>
+                    <a href="${audioUrl}" download="speech.mp3" class="download-btn">
+                        <i class="fas fa-download"></i> Download MP3
+                    </a>
+                </div>
+                <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                    📊 Generated ${requestData.text.length} characters of speech
+                </p>
+            `;
+            
+            showElement(result);
+        }
+
+        // Get voice display name
+        function getVoiceName(voiceValue) {
+            const voice = voices.find(v => v.value === voiceValue);
+            return voice ? voice.name : voiceValue;
+        }
+
+        // Show error message
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.innerHTML = `<strong>❌ Error:</strong> ${message}`;
+            showElement(error);
+        }
+
+        // Utility functions
+        function showElement(element) {
+            element.classList.remove('hidden');
+        }
+
+        function hideElement(element) {
+            element.classList.add('hidden');
+        }
+    </script>
+</body>
+</html> 

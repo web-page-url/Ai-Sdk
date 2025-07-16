@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Agents SDK - Test Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: #4f46e5;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response.success {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            color: #0c4a6e;
+        }
+        
+        .response.error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #b91c1c;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .file-input {
+            border: 2px dashed #d1d5db;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #10b981;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .endpoint-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .endpoint {
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .endpoint strong {
+            color: #4f46e5;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            color: black;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-link {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Agents SDK</h1>
+            <p>Test Interface for AI Agent Capabilities</p>
+            <span class="status-badge">Server Running</span>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active" target="_blank">🏠 Home</a>
+                <a href="chat-pdf.html" class="nav-link" target="_blank">📄 Chat PDF</a>
+                <a href="text-to-image.html" class="nav-link" target="_blank">🖼️ Text to Image</a>
+                <a href="text-to-speech.html" class="nav-link" target="_blank">🗣️ Text to Speech</a>
+                <a href="openai-agents.html" class="nav-link" target="_blank">🤖 OpenAI Agents</a>
+                <a href="code-explanation.html" class="nav-link" target="_blank">💻 Code Explanation</a>
+            </div>
+        </nav>
+        
+        <div class="grid">
+            <!-- Chat Interface -->
+            <div class="card">
+                <h3><span class="emoji">💬</span> Chat with AI</h3>
+                <div class="form-group">
+                    <label for="chatMessage">Message:</label>
+                    <textarea id="chatMessage" placeholder="Ask me anything!">Hello! Can you explain what AI agents are?</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="chatModel">Model:</label>
+                    <select id="chatModel">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="testChat()">Send Message</button>
+                <div id="chatResponse"></div>
+            </div>
+            
+            <!-- Web Search -->
+            <div class="card">
+                <h3><span class="emoji">🔍</span> Web Search</h3>
+                <div class="form-group">
+                    <label for="searchQuery">Search Query:</label>
+                    <input type="text" id="searchQuery" placeholder="latest AI developments 2024" value="latest AI developments 2024">
+                </div>
+                <div class="form-group">
+                    <label for="maxResults">Max Results:</label>
+                    <input type="number" id="maxResults" min="1" max="10" value="3">
+                </div>
+                <button class="btn" onclick="testWebSearch()">Search Web</button>
+                <div id="searchResponse"></div>
+            </div>
+            
+            <!-- File Upload -->
+            <div class="card">
+                <h3><span class="emoji">📄</span> File Analysis</h3>
+                <div class="form-group">
+                    <label for="fileUpload">Select File:</label>
+                    <div class="file-input" onclick="document.getElementById('fileUpload').click()">
+                        <input type="file" id="fileUpload" style="display: none;" accept=".pdf,.docx,.txt,.csv,.json,.xlsx">
+                        <p>Click to select a file (PDF, DOCX, TXT, CSV, JSON, XLSX)</p>
+                    </div>
+                </div>
+                <button class="btn" onclick="testFileUpload()">Analyze File</button>
+                <div id="fileResponse"></div>
+            </div>
+            
+            <!-- Computer Use -->
+            <div class="card">
+                <h3><span class="emoji">🖥️</span> Computer Automation</h3>
+                <div class="form-group">
+                    <label for="computerAction">Action:</label>
+                    <select id="computerAction">
+                        <option value="get_system_info">Get System Info</option>
+                        <option value="list_files">List Files</option>
+                        <option value="create_folder">Create Folder</option>
+                        <option value="take_screenshot">Take Screenshot</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="actionParams">Parameters (JSON):</label>
+                    <textarea id="actionParams" placeholder='{"directory": "."}'>{}</textarea>
+                </div>
+                <button class="btn" onclick="testComputerUse()">Execute Action</button>
+                <div id="computerResponse"></div>
+            </div>
+            
+            <!-- Agent Creation -->
+            <div class="card">
+                <h3><span class="emoji">🤖</span> Create Custom Agent</h3>
+                <div class="form-group">
+                    <label for="agentName">Agent Name:</label>
+                    <input type="text" id="agentName" placeholder="TravelAgent" value="TestAgent">
+                </div>
+                <div class="form-group">
+                    <label for="agentDescription">Description:</label>
+                    <textarea id="agentDescription" placeholder="Helps with travel planning">A test agent for demonstration</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="agentCapabilities">Capabilities (comma-separated):</label>
+                    <input type="text" id="agentCapabilities" placeholder="web_search, information_gathering" value="web_search, general_assistance">
+                </div>
+                <button class="btn" onclick="testAgentCreation()">Create Agent</button>
+                <div id="agentResponse"></div>
+            </div>
+            
+            <!-- Agent Execution -->
+            <div class="card">
+                <h3><span class="emoji">🚀</span> Execute Agent Task</h3>
+                <div class="form-group">
+                    <label for="agentId">Agent ID:</label>
+                    <input type="text" id="agentId" placeholder="agent-uuid-here">
+                </div>
+                <div class="form-group">
+                    <label for="agentTask">Task:</label>
+                    <textarea id="agentTask" placeholder="Help me plan a trip to Paris">Find information about the weather today</textarea>
+                </div>
+                <button class="btn" onclick="testAgentExecution()">Execute Task</button>
+                <div id="executionResponse"></div>
+            </div>
+
+            <!-- Text-to-Speech -->
+            <div class="card">
+                <h3><span class="emoji">🗣️</span> Text-to-Speech</h3>
+                <div class="form-group">
+                    <label for="ttsText">Text to Convert:</label>
+                    <textarea id="ttsText" placeholder="Hello! This is a test of the text-to-speech feature.">Welcome to our AI Agents SDK! This powerful platform combines multiple AI capabilities including text-to-speech conversion.</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ttsVoice">Voice:</label>
+                    <select id="ttsVoice">
+                        <option value="alloy">Alloy (Neutral)</option>
+                        <option value="echo">Echo (Male)</option>
+                        <option value="fable">Fable (British Male)</option>
+                        <option value="onyx">Onyx (Deep Male)</option>
+                        <option value="nova">Nova (Female)</option>
+                        <option value="shimmer">Shimmer (Soft Female)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="window.open('/text-to-speech.html', '_blank')">🎵 Open TTS Interface</button>
+                <div id="ttsResponse"></div>
+            </div>
+
+            <!-- Text-to-Image -->
+            <div class="card">
+                <h3><span class="emoji">🖼️</span> Text-to-Image</h3>
+                <div class="form-group">
+                    <label for="imagePrompt">Image Description:</label>
+                    <textarea id="imagePrompt" placeholder="A futuristic city with flying cars...">A serene landscape with mountains and a lake at sunset, painted in watercolor style</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="imageModel">AI Model:</label>
+                    <select id="imageModel">
+                        <option value="dall-e-2">DALL-E 2 (Cheaper, Faster)</option>
+                        <option value="dall-e-3">DALL-E 3 (Higher Quality)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="window.open('/text-to-image.html', '_blank')">🎨 Open Image Generator</button>
+                <div id="imageResponse"></div>
+            </div>
+        </div>
+        
+        <!-- API Information -->
+        <div class="info-section">
+            <h3>📚 Available API Endpoints</h3>
+            <div class="endpoint-list">
+                <div class="endpoint">
+                    <strong>POST /api/chat</strong> - General chat with AI
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/web-search</strong> - Web search capabilities
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/file-upload</strong> - Upload and analyze files
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/computer-use</strong> - Computer automation tasks
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/text-to-speech</strong> - Convert text to speech audio 🗣️
+                </div>
+                <div class="endpoint">
+                    <strong>GET /api/text-to-speech/voices</strong> - Get available TTS voices
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/text-to-image</strong> - Generate images from text descriptions 🖼️
+                </div>
+                <div class="endpoint">
+                    <strong>GET /api/text-to-image/models</strong> - Get available image generation models
+                </div>
+                <div class="endpoint">
+                    <strong>GET /api/agents</strong> - List available agents
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/agents/create</strong> - Create a custom agent
+                </div>
+                <div class="endpoint">
+                    <strong>POST /api/agents/:id/execute</strong> - Execute an agent task
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="loading"></div>Processing...';
+            element.className = 'response';
+        }
+        
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = `response ${isError ? 'error' : 'success'}`;
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                throw new Error(`Request failed: ${error.message}`);
+            }
+        }
+        
+        // Test functions
+        async function testChat() {
+            showLoading('chatResponse');
+            try {
+                const data = await makeRequest('/api/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        message: document.getElementById('chatMessage').value,
+                        model: document.getElementById('chatModel').value
+                    })
+                });
+                showResponse('chatResponse', data);
+            } catch (error) {
+                showResponse('chatResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function testWebSearch() {
+            showLoading('searchResponse');
+            try {
+                const data = await makeRequest('/api/web-search', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        query: document.getElementById('searchQuery').value,
+                        maxResults: parseInt(document.getElementById('maxResults').value)
+                    })
+                });
+                showResponse('searchResponse', data);
+            } catch (error) {
+                showResponse('searchResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function testFileUpload() {
+            const fileInput = document.getElementById('fileUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showResponse('fileResponse', { error: 'Please select a file' }, true);
+                return;
+            }
+            
+            showLoading('fileResponse');
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/file-upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                showResponse('fileResponse', data);
+            } catch (error) {
+                showResponse('fileResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function testComputerUse() {
+            showLoading('computerResponse');
+            try {
+                let parameters = {};
+                try {
+                    parameters = JSON.parse(document.getElementById('actionParams').value);
+                } catch (e) {
+                    // If JSON parsing fails, use empty object
+                }
+                
+                const data = await makeRequest('/api/computer-use', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: document.getElementById('computerAction').value,
+                        parameters: parameters
+                    })
+                });
+                showResponse('computerResponse', data);
+            } catch (error) {
+                showResponse('computerResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function testAgentCreation() {
+            showLoading('agentResponse');
+            try {
+                const capabilities = document.getElementById('agentCapabilities').value
+                    .split(',')
+                    .map(cap => cap.trim())
+                    .filter(cap => cap);
+                
+                const data = await makeRequest('/api/agents/create', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: document.getElementById('agentName').value,
+                        description: document.getElementById('agentDescription').value,
+                        capabilities: capabilities
+                    })
+                });
+                showResponse('agentResponse', data);
+                
+                // If successful, populate the agent ID field
+                if (data.success && data.agent && data.agent.id) {
+                    document.getElementById('agentId').value = data.agent.id;
+                }
+            } catch (error) {
+                showResponse('agentResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function testAgentExecution() {
+            const agentId = document.getElementById('agentId').value;
+            if (!agentId) {
+                showResponse('executionResponse', { error: 'Please provide an Agent ID' }, true);
+                return;
+            }
+            
+            showLoading('executionResponse');
+            try {
+                const data = await makeRequest(`/api/agents/${agentId}/execute`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        task: document.getElementById('agentTask').value,
+                        context: {
+                            query: document.getElementById('agentTask').value
+                        }
+                    })
+                });
+                showResponse('executionResponse', data);
+            } catch (error) {
+                showResponse('executionResponse', { error: error.message }, true);
+            }
+        }
+        
+        // File input change handler
+        document.getElementById('fileUpload').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file selected';
+            const fileInput = e.target.parentElement;
+            fileInput.querySelector('p').textContent = fileName;
+        });
+        
+        // Load agents list on page load
+        async function loadAgents() {
+            try {
+                const data = await makeRequest('/api/agents');
+                if (data.agents && data.agents.length > 0) {
+                    const firstAgent = data.agents[0];
+                    document.getElementById('agentId').value = firstAgent.id;
+                }
+            } catch (error) {
+                console.log('No agents found or server not ready');
+            }
+        }
+        
+        // Initialize page
+        window.addEventListener('load', loadAgents);
+    </script>
+</body>
+</html> 

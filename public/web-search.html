@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 AI Web Search - Intelligent Search Engine</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+        }
+
+        .search-section {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-input-group {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 20px 60px 20px 20px;
+            border: 3px solid transparent;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .search-button:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .search-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: translateY(-50%);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .option-select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .option-select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .results-section {
+            flex: 1;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .results-container {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .results-stats {
+            font-size: 0.95rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .search-results {
+            display: grid;
+            gap: 25px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border-left-color: #4f46e5;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .result-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .result-title a:hover {
+            color: #4f46e5;
+        }
+
+        .result-url {
+            font-size: 0.9rem;
+            color: #10b981;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .result-snippet {
+            font-size: 1rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .result-source {
+            display: inline-block;
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .ai-synthesis {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .synthesis-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .synthesis-icon {
+            color: #0ea5e9;
+            font-size: 1.3rem;
+        }
+
+        .synthesis-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+
+        .synthesis-content {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #0e7490;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #dc2626;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .error-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+            }
+
+            .search-section,
+            .results-container {
+                padding: 25px;
+                border-radius: 16px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-input {
+                padding: 16px 50px 16px 16px;
+                font-size: 1rem;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .result-card {
+                padding: 20px;
+            }
+
+            .ai-synthesis {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .search-section,
+            .results-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .search-input {
+                padding: 14px 45px 14px 14px;
+            }
+
+            .search-button {
+                padding: 10px 12px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .search-input {
+                background: #1f2937;
+                color: white;
+            }
+
+            .search-input:focus {
+                background: #374151;
+            }
+
+            .option-select {
+                background: #1f2937;
+                color: white;
+                border-color: #374151;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 70, 229, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(79, 70, 229, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-search"></i> AI Web Search</h1>
+            <p>Intelligent search powered by AI synthesis</p>
+        </div>
+
+        <div class="search-section">
+            <form class="search-form" id="searchForm">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchQuery" 
+                        placeholder="Search for anything... (e.g., latest AI developments, weather in Tokyo, etc.)"
+                        required
+                    >
+                    <button type="submit" class="search-button" id="searchButton">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label class="option-label" for="maxResults">
+                            <i class="fas fa-list-ol"></i> Results Count
+                        </label>
+                        <select class="option-select" id="maxResults">
+                            <option value="3">3 Results</option>
+                            <option value="5" selected>5 Results</option>
+                            <option value="7">7 Results</option>
+                            <option value="10">10 Results</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <label class="option-label" for="searchType">
+                            <i class="fas fa-filter"></i> Search Type
+                        </label>
+                        <select class="option-select" id="searchType">
+                            <option value="general" selected>General Search</option>
+                            <option value="news">Latest News</option>
+                            <option value="academic">Academic/Research</option>
+                            <option value="tutorial">Tutorials & Guides</option>
+                            <option value="definition">Definitions</option>
+                            <option value="comparison">Comparisons</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <label class="option-label" for="provider">
+                            <i class="fas fa-globe"></i> Search Provider
+                        </label>
+                        <select class="option-select" id="provider">
+                            <option value="duckduckgo" selected>DuckDuckGo</option>
+                            <option value="bing">Bing</option>
+                            <option value="google">Google</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-section">
+            <div class="results-container" id="resultsContainer">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const searchQuery = document.getElementById('searchQuery');
+        const searchButton = document.getElementById('searchButton');
+        const maxResults = document.getElementById('maxResults');
+        const searchType = document.getElementById('searchType');
+        const provider = document.getElementById('provider');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Sample search suggestions
+        const searchSuggestions = [
+            "latest AI developments 2024",
+            "how to create a website",
+            "best programming languages",
+            "climate change solutions",
+            "healthy recipes for beginners",
+            "space exploration news",
+            "machine learning tutorials",
+            "sustainable energy sources"
+        ];
+
+        // Add search suggestion on page load
+        function getRandomSuggestion() {
+            const randomIndex = Math.floor(Math.random() * searchSuggestions.length);
+            return searchSuggestions[randomIndex];
+        }
+
+        // Update placeholder with random suggestion
+        function updatePlaceholder() {
+            const suggestion = getRandomSuggestion();
+            searchQuery.placeholder = `Search for anything... (e.g., ${suggestion})`;
+        }
+
+        // Update placeholder every 5 seconds
+        setInterval(updatePlaceholder, 5000);
+
+        // Form submission handler
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await performSearch();
+        });
+
+        // Enter key handler for search input
+        searchQuery.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        async function performSearch() {
+            const query = searchQuery.value.trim();
+            if (!query) return;
+
+            // Show loading state
+            showLoading();
+
+            try {
+                // Modify query based on search type
+                const modifiedQuery = modifyQueryByType(query, searchType.value);
+
+                const response = await fetch('/api/web-search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: modifiedQuery,
+                        maxResults: parseInt(maxResults.value),
+                        provider: provider.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data, query);
+                } else {
+                    showError(data.error || 'Search failed');
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+        }
+
+        function modifyQueryByType(query, type) {
+            const modifiers = {
+                general: query,
+                news: `${query} news latest`,
+                academic: `${query} research paper study`,
+                tutorial: `${query} tutorial how to guide`,
+                definition: `${query} definition meaning`,
+                comparison: `${query} vs comparison`
+            };
+            return modifiers[type] || query;
+        }
+
+        function showLoading() {
+            searchButton.disabled = true;
+            searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            resultsContainer.style.display = 'block';
+            resultsContainer.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">
+                        <i class="fas fa-brain"></i> AI is searching and analyzing results...
+                    </div>
+                </div>
+            `;
+            
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayResults(data, originalQuery) {
+            searchButton.disabled = false;
+            searchButton.innerHTML = '<i class="fas fa-search"></i>';
+
+            const { results, synthesis, provider: usedProvider, timestamp } = data;
+
+            let html = `
+                <div class="results-header">
+                    <div class="results-title">
+                        <i class="fas fa-search-plus"></i> Search Results
+                    </div>
+                    <div class="results-stats">
+                        ${results.length} results • ${usedProvider} • ${new Date(timestamp).toLocaleTimeString()}
+                    </div>
+                </div>
+            `;
+
+            // Add AI synthesis if available
+            if (synthesis && synthesis.answer) {
+                html += `
+                    <div class="ai-synthesis">
+                        <div class="synthesis-header">
+                            <i class="fas fa-robot synthesis-icon"></i>
+                            <div class="synthesis-title">AI Summary</div>
+                        </div>
+                        <div class="synthesis-content">
+                            ${synthesis.answer}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add search results
+            html += '<div class="search-results">';
+            
+            results.forEach((result, index) => {
+                html += `
+                    <div class="result-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="result-title">
+                            <a href="${result.url}" target="_blank" rel="noopener noreferrer">
+                                ${result.title}
+                            </a>
+                        </div>
+                        <div class="result-url">${formatUrl(result.url)}</div>
+                        <div class="result-snippet">${result.content || result.snippet}</div>
+                        <div class="result-source">${result.source}</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            resultsContainer.innerHTML = html;
+            
+            // Add animation class to result cards
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.result-card');
+                cards.forEach(card => {
+                    card.style.animation = 'fadeInUp 0.6s ease-out both';
+                });
+            }, 100);
+        }
+
+        function formatUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                return urlObj.hostname;
+            } catch {
+                return url;
+            }
+        }
+
+        function showError(message) {
+            searchButton.disabled = false;
+            searchButton.innerHTML = '<i class="fas fa-search"></i>';
+
+            resultsContainer.style.display = 'block';
+            resultsContainer.innerHTML = `
+                <div class="error-state">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="error-title">Search Error</div>
+                    <div class="error-message">${message}</div>
+                </div>
+            `;
+        }
+
+        // Auto-focus search input on page load
+        window.addEventListener('load', () => {
+            searchQuery.focus();
+            updatePlaceholder();
+        });
+
+        // Add some example searches for quick access
+        const exampleSearches = [
+            "latest AI developments",
+            "how to learn programming",
+            "best travel destinations",
+            "healthy breakfast recipes"
+        ];
+
+        // You could add quick search buttons here if desired
+        function addQuickSearchButtons() {
+            const quickSearchContainer = document.createElement('div');
+            quickSearchContainer.className = 'quick-searches';
+            quickSearchContainer.innerHTML = `
+                <div style="margin-top: 20px; text-align: center;">
+                    <p style="color: #6b7280; margin-bottom: 10px;">Quick searches:</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                        ${exampleSearches.map(search => `
+                            <button 
+                                onclick="quickSearch('${search}')" 
+                                style="
+                                    background: rgba(79, 70, 229, 0.1); 
+                                    border: 1px solid rgba(79, 70, 229, 0.3); 
+                                    color: #4f46e5; 
+                                    padding: 8px 16px; 
+                                    border-radius: 20px; 
+                                    cursor: pointer; 
+                                    font-size: 0.9rem;
+                                    transition: all 0.3s ease;
+                                "
+                                onmouseover="this.style.background='rgba(79, 70, 229, 0.2)'"
+                                onmouseout="this.style.background='rgba(79, 70, 229, 0.1)'"
+                            >
+                                ${search}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.querySelector('.search-section').appendChild(quickSearchContainer);
+        }
+
+        function quickSearch(query) {
+            searchQuery.value = query;
+            performSearch();
+        }
+
+        // Add quick search buttons on page load
+        window.addEventListener('load', addQuickSearchButtons);
+    </script>
+</body>
+</html> 

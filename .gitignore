@@ -59,7 +59,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public - removing this so we can commit our HTML frontend files
 
 # Storybook build outputs
 .out

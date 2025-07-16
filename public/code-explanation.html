@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 AI Agents SDK - Code Explanation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: "💻 Code Example";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .highlight {
+            background: #f39c12;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .flow-diagram {
+            background: #ecf0f1;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .flow-step {
+            background: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 25px;
+            display: inline-block;
+            border: 3px solid #667eea;
+            font-weight: 600;
+            min-width: 200px;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #667eea;
+            margin: 10px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .interactive-demo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .demo-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .demo-button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .demo-button:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .demo-output {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            min-height: 60px;
+            font-family: monospace;
+        }
+
+        .analogy-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .analogy-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .file-structure {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+        }
+
+        .file-structure .folder {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .file-structure .file {
+            color: #2ecc71;
+        }
+
+        .cost-savings {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .cost-savings h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            color: black;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-link {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 AI Agents SDK Explained</h1>
+            <p>Understanding the Code - In Easy Words!</p>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" target="_blank">🏠 Home</a>
+                <a href="chat-pdf.html" class="nav-link" target="_blank">📄 Chat PDF</a>
+                <a href="text-to-image.html" class="nav-link" target="_blank">🖼️ Text to Image</a>
+                <a href="text-to-speech.html" class="nav-link" target="_blank">🗣️ Text to Speech</a>
+                <a href="openai-agents.html" class="nav-link" target="_blank">🤖 OpenAI Agents</a>
+                <a href="code-explanation.html" class="nav-link active" target="_blank">💻 Code Explanation</a>
+            </div>
+        </nav>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="#overview">🏠 Overview</a></li>
+                <li><a href="#how-it-works">⚙️ How It Works</a></li>
+                <li><a href="#components">🧩 Components</a></li>
+                <li><a href="#fallback">🔄 Fallback System</a></li>
+                <li><a href="#cost">💰 Cost Savings</a></li>
+                <li><a href="#demo">🎮 Interactive Demo</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- OVERVIEW SECTION -->
+            <section id="overview" class="section">
+                <h2>🏠 What Is This Whole Thing?</h2>
+                
+                <div class="analogy-box">
+                    <h4>🏫 Think of it like a Smart School:</h4>
+                    <p>Instead of having one confused teacher trying to teach everything, you have specialist teachers who are really good at their subjects. Plus, there's a smart receptionist who figures out which teacher you need!</p>
+                </div>
+
+                <h3>The "Teachers" in Our AI School:</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>What They Do</th>
+                            <th>Example Question</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>📚 <strong>History Tutor</strong></td>
+                            <td>Answers questions about the past, events, dates, countries</td>
+                            <td>"What is the capital of France?"</td>
+                        </tr>
+                        <tr>
+                            <td>🔢 <strong>Math Tutor</strong></td>
+                            <td>Solves math problems and shows step-by-step solutions</td>
+                            <td>"What is 2x + 5 = 15?"</td>
+                        </tr>
+                        <tr>
+                            <td>🧠 <strong>Triage Agent</strong></td>
+                            <td>Smart receptionist - figures out which teacher you need</td>
+                            <td>Analyzes your question and routes to the right specialist</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Why This Is Better Than One "Super Teacher":</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step" style="background: #e74c3c; color: white;">❌ One AI for Everything</div>
+                    <div class="arrow">VS</div>
+                    <div class="flow-step" style="background: #2ecc71; color: white;">✅ Specialist AI Team</div>
+                </div>
+                <p><strong>Result:</strong> More accurate answers, cheaper to run, and easier to expand!</p>
+            </section>
+
+            <!-- HOW IT WORKS SECTION -->
+            <section id="how-it-works" class="section">
+                <h2>⚙️ How The Magic Happens</h2>
+
+                <h3>When you ask: "What is 2+2?"</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">🚪 You ask question</div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">📞 Try Plan A (Official SDK)</div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">❌ Plan A fails</div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">🔄 Switch to Plan B</div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">🧠 Triage analyzes question</div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">➡️ Routes to Math Teacher</div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">✅ You get smart answer!</div>
+                </div>
+
+                <h3>The Smart Routing Code:</h3>
+                <div class="code-block">
+<pre>
+// This is like a smart sorting hat from Harry Potter!
+const isHistoryQuestion = /history|when|where|who|date|capital|country/i.test(input);
+const isMathQuestion = /solve|calculate|equation|math|\+|\-|\*|\/|=/i.test(input);
+
+if (isHistoryQuestion && !isMathQuestion) {
+    // Send to History Teacher! 📚
+    agentName = 'History Tutor';
+} else if (isMathQuestion && !isHistoryQuestion) {
+    // Send to Math Teacher! 🔢
+    agentName = 'Math Tutor';
+} else {
+    // General helper for confused questions 🤝
+    agentName = 'General Assistant';
+}
+</pre>
+                </div>
+
+                <div class="analogy-box">
+                    <h4>🎯 How it decides:</h4>
+                    <p><strong>Sees words like:</strong> "when", "where", "capital" → <span class="highlight">History Teacher!</span></p>
+                    <p><strong>Sees words like:</strong> "solve", "calculate", "+", "=" → <span class="highlight">Math Teacher!</span></p>
+                    <p><strong>Confused?</strong> → <span class="highlight">General Helper!</span></p>
+                </div>
+            </section>
+
+            <!-- COMPONENTS SECTION -->
+            <section id="components" class="section">
+                <h2>🧩 The Main Components</h2>
+
+                <h3>🏗️ File Structure (Like School Departments):</h3>
+                <div class="file-structure">
+<pre>
+src/
+├── <span class="folder">agents/</span>           # 🏫 The Teachers' Office
+│   ├── <span class="file">OpenAIAgentsSDK.js</span>   # Main coordinator
+│   ├── <span class="file">AgentSDK.js</span>          # Custom agent builder
+│   └── <span class="file">WebSearchAgent.js</span>    # Internet research helper
+├── <span class="folder">api/</span>              # 📡 Communication Center  
+│   └── <span class="file">ResponsesAPI.js</span>      # Talks to OpenAI
+├── <span class="folder">config/</span>           # ⚙️ Settings Department
+│   └── <span class="file">openai.js</span>            # AI configuration
+└── <span class="file">index.js</span>          # 🚪 Main entrance/server
+</pre>
+                </div>
+
+                <h3>🎭 The Main Characters:</h3>
+
+                <h4>1. The Triage Agent (Smart Receptionist)</h4>
+                <div class="code-block">
+<pre>
+// This is like a smart receptionist at school
+const triageAgent = new Agent({
+    name: 'Triage Agent',
+    instructions: 'Figure out if this is a history or math question, then send them to the right teacher'
+});
+</pre>
+                </div>
+
+                <h4>2. The Specialist Teachers</h4>
+                <div class="code-block">
+<pre>
+// History specialist
+const historyTutorAgent = new Agent({
+    name: 'History Tutor',
+    instructions: 'You are an expert in historical events, dates, and context'
+});
+
+// Math specialist  
+const mathTutorAgent = new Agent({
+    name: 'Math Tutor',
+    instructions: 'You solve math problems step-by-step with clear explanations'
+});
+</pre>
+                </div>
+
+                <h4>3. The Website Interface</h4>
+                <div class="code-block">
+<pre>
+// The buttons and chat interface
+&lt;button onclick="runAgent()"&gt;🚀 Run Agent&lt;/button&gt;
+&lt;div id="conversation"&gt;&lt;!-- Chat messages appear here --&gt;&lt;/div&gt;
+
+// What happens when you click:
+1. You type in the text box
+2. Click "Run Agent" button  
+3. JavaScript sends your question to the server
+4. Server processes with the AI agents
+5. Answer appears in the chat area
+</pre>
+                </div>
+            </section>
+
+            <!-- FALLBACK SYSTEM SECTION -->
+            <section id="fallback" class="section">
+                <h2>🔄 The Brilliant Fallback System</h2>
+
+                <div class="analogy-box">
+                    <h4>📱 Think of it like this:</h4>
+                    <p>You want to call your friend, but their phone is broken. So you automatically text them instead! You always get through, no matter what.</p>
+                </div>
+
+                <h3>The Two-Plan System:</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>What It Uses</th>
+                            <th>When It's Used</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Plan A</strong></td>
+                            <td>Official OpenAI Agents SDK</td>
+                            <td>First attempt (fancy but sometimes fails)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Plan B</strong></td>
+                            <td>Our custom-built system</td>
+                            <td>When Plan A fails (reliable backup)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>The Fallback Code:</h3>
+                <div class="code-block">
+<pre>
+try {
+    // Try Plan A: Official SDK
+    const result = await run(agent, input);
+    return result;
+} catch (error) {
+    console.log('Plan A failed, switching to Plan B...');
+    
+    // Plan B: Our reliable custom system
+    this.useFallback = true;
+    return await this.runFallbackAgent(agentType, input);
+}
+</pre>
+                </div>
+
+                <p><strong>Why this is genius:</strong> You <span class="highlight">always get an answer</span>, even if the official system has problems!</p>
+            </section>
+
+            <!-- COST SAVINGS SECTION -->
+            <section id="cost" class="section">
+                <h2>💰 Smart Cost Savings</h2>
+
+                <div class="cost-savings">
+                    <h4>💸 We Save You 90% on AI Costs!</h4>
+                    <p>By using smarter, cheaper models instead of the expensive ones</p>
+                </div>
+
+                <h3>The Cost Optimization:</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Cost per 1K tokens</th>
+                            <th>Quality</th>
+                            <th>Our Choice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>GPT-4</strong></td>
+                            <td>~$0.03</td>
+                            <td>Excellent</td>
+                            <td>❌ Too expensive</td>
+                        </tr>
+                        <tr style="background: #d4edda;">
+                            <td><strong>GPT-3.5-turbo</strong></td>
+                            <td>~$0.002</td>
+                            <td>Very Good</td>
+                            <td>✅ Perfect choice!</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>How We Configure It:</h3>
+                <div class="code-block">
+<pre>
+// Smart cost settings
+const response = await this.responsesAPI.chat({
+    model: 'gpt-3.5-turbo',    // Cheaper model (90% savings!)
+    max_tokens: 1000,          // Shorter responses (50% fewer tokens)
+    temperature: 0.7           // Good balance of creativity and accuracy
+});
+</pre>
+                </div>
+
+                <div class="analogy-box">
+                    <h4>📱 Like choosing a phone plan:</h4>
+                    <p><strong>GPT-4</strong> = Premium unlimited plan ($$$)</p>
+                    <p><strong>GPT-3.5-turbo</strong> = Basic plan that works great (💰)</p>
+                    <p><strong>Result:</strong> You still get smart answers, just much cheaper!</p>
+                </div>
+            </section>
+
+            <!-- INTERACTIVE DEMO SECTION -->
+            <section id="demo" class="section">
+                <h2>🎮 Interactive Demo</h2>
+
+                <div class="interactive-demo">
+                    <h3>🧪 Test the Smart Routing System!</h3>
+                    <p>Type a question below and see which agent it would route to:</p>
+                    
+                    <input type="text" id="demoInput" class="demo-input" placeholder="Try: 'What is the capital of France?' or 'Solve 2x + 5 = 15'">
+                    <br>
+                    <button class="demo-button" onclick="analyzeQuestion()">🔍 Analyze Question</button>
+                    
+                    <div id="demoOutput" class="demo-output">
+                        Results will appear here...
+                    </div>
+                </div>
+
+                <h3>🎯 Try These Examples:</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                        <strong>📚 History Questions:</strong><br>
+                        • "When did World War 2 end?"<br>
+                        • "What is the capital of Japan?"<br>
+                        • "Tell me about the Renaissance"
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #f39c12;">
+                        <strong>🔢 Math Questions:</strong><br>
+                        • "What is 25% of 200?"<br>
+                        • "Solve: 2x + 5 = 15"<br>
+                        • "Calculate the area of a circle"
+                    </div>
+                </div>
+
+                <h3>🚀 Ready to Try the Real Thing?</h3>
+                <p style="text-align: center; margin: 20px 0;">
+                    <a href="/openai-agents.html" style="background: #667eea; color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block; transition: all 0.3s ease;">
+                        🤖 Try the Live AI Agents!
+                    </a>
+                </p>
+            </section>
+
+            <!-- SUMMARY SECTION -->
+            <section class="section">
+                <h2>🎯 Why This Matters</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; text-align: center;">
+                        <h4 style="color: #2ecc71;">✅ Never Fails</h4>
+                        <p>Backup system ensures you always get answers</p>
+                    </div>
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 10px; text-align: center;">
+                        <h4 style="color: #f39c12;">💰 Saves Money</h4>
+                        <p>90% cheaper than using premium models</p>
+                    </div>
+                    <div style="background: #e1ecf4; padding: 20px; border-radius: 10px; text-align: center;">
+                        <h4 style="color: #667eea;">🎯 Better Answers</h4>
+                        <p>Specialists give more accurate responses</p>
+                    </div>
+                    <div style="background: #f8d7da; padding: 20px; border-radius: 10px; text-align: center;">
+                        <h4 style="color: #e74c3c;">🔧 Easy to Expand</h4>
+                        <p>Add new agent types anytime</p>
+                    </div>
+                </div>
+
+                <div class="analogy-box" style="margin-top: 30px;">
+                    <h4>🎓 You've Built Something Amazing!</h4>
+                    <p>You've created a <strong>scalable AI assistant system</strong> that's smarter, cheaper, and more reliable than most commercial solutions. That's some serious programming skills right there! 🚀</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function analyzeQuestion() {
+            const input = document.getElementById('demoInput').value.trim();
+            const output = document.getElementById('demoOutput');
+            
+            if (!input) {
+                output.innerHTML = '❌ Please enter a question first!';
+                return;
+            }
+
+            // Simulate the routing logic
+            const isHistoryQuestion = /\b(history|historical|when|where|who|date|year|century|war|empire|civilization|ancient|medieval|renaissance|revolution|battle|king|queen|president|capital|country|nation)\b/i.test(input);
+            const isMathQuestion = /\b(solve|calculate|equation|math|algebra|geometry|trigonometry|calculus|\+|\-|\*|\/|=|x|y|formula|theorem|proof|derivative|integral|matrix|vector|percent|area|volume)\b/i.test(input);
+            
+            let result = '';
+            let agentName = '';
+            let explanation = '';
+            
+            if (isHistoryQuestion && !isMathQuestion) {
+                agentName = '📚 History Tutor';
+                explanation = 'Detected history-related keywords: dates, places, events, or historical figures';
+                result = '🎯 ROUTING TO: History Tutor';
+            } else if (isMathQuestion && !isHistoryQuestion) {
+                agentName = '🔢 Math Tutor';
+                explanation = 'Detected math-related keywords: calculations, equations, or mathematical terms';
+                result = '🎯 ROUTING TO: Math Tutor';
+            } else if (isHistoryQuestion && isMathQuestion) {
+                agentName = '🧠 Triage Agent';
+                explanation = 'Mixed signals detected - will analyze context more deeply';
+                result = '🤔 ANALYZING: Triage Agent will decide';
+            } else {
+                agentName = '🤝 General Assistant';
+                explanation = 'No specific subject keywords detected - general assistance';
+                result = '🎯 ROUTING TO: General Assistant';
+            }
+            
+            output.innerHTML = `
+                <strong>${result}</strong><br><br>
+                <strong>Selected Agent:</strong> ${agentName}<br>
+                <strong>Reasoning:</strong> ${explanation}<br><br>
+                <strong>Your Question:</strong> "${input}"
+            `;
+        }
+
+        // Add some fun interactions
+        document.getElementById('demoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeQuestion();
+            }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
