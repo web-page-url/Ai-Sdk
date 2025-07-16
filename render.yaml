@@ -4,11 +4,14 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node src/index.js
     healthCheckPath: /health
+    region: oregon
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: "20.15.1"
       - key: OPENAI_API_KEY
         sync: false  # This will need to be set manually in Render dashboard
       - key: DEFAULT_MODEL

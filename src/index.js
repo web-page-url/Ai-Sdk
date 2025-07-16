@@ -96,13 +96,30 @@ async function initializeServer() {
     const textToSpeechAgent = new TextToSpeechAgent(process.env.OPENAI_API_KEY);
     const textToImageAgent = new TextToImageAgent(process.env.OPENAI_API_KEY);
 
-    // Health check endpoint for deployment
+    // Health check endpoint for deployment - must respond quickly
     app.get('/health', (req, res) => {
+      // Simple, fast health check
       res.status(200).json({ 
         status: 'healthy', 
         timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        version: '1.0.0'
+        uptime: Math.floor(process.uptime()),
+        version: '1.0.0',
+        node_version: process.version,
+        memory: Math.floor(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB'
+      });
+    });
+
+    // Startup health endpoint
+    app.get('/ready', (req, res) => {
+      const hasApiKey = !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'dummy-key-for-build';
+      res.status(200).json({
+        status: 'ready',
+        services: {
+          openai: hasApiKey ? 'configured' : 'missing_api_key',
+          upload_dir: 'configured',
+          server: 'running'
+        },
+        timestamp: new Date().toISOString()
       });
     });
 
@@ -638,11 +655,44 @@ async function initializeServer() {
       res.status(500).json({ error: 'Internal server error' });
     });
 
-    // Start server
-    app.listen(PORT, () => {
-      console.log(`🚀 AI Agents SDK Server running on port ${PORT}`);
-      console.log(`📚 API Documentation available at http://localhost:${PORT}`);
-      console.log('🔑 Make sure to set your OPENAI_API_KEY in the .env file');
+    // Start server - bind to all interfaces for Render deployment
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log('='.repeat(50));
+      console.log(`🚀 AI Agents SDK Server STARTED SUCCESSFULLY`);
+      console.log(`📍 Port: ${PORT}`);
+      console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📚 API Docs: http://0.0.0.0:${PORT}`);
+      console.log(`🔍 Health Check: http://0.0.0.0:${PORT}/health`);
+      console.log(`✅ Ready Check: http://0.0.0.0:${PORT}/ready`);
+      console.log(`🔑 OpenAI API Key: ${process.env.OPENAI_API_KEY ? 'SET' : 'MISSING'}`);
+      console.log('='.repeat(50));
+    });
+
+    // Handle server errors
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use`);
+      } else {
+        console.error(`❌ Server error:`, error);
+      }
+      process.exit(1);
+    });
+
+    // Graceful shutdown handling
+    process.on('SIGTERM', () => {
+      console.log('📴 SIGTERM received. Shutting down gracefully...');
+      server.close(() => {
+        console.log('🔴 Server closed');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGINT', () => {
+      console.log('📴 SIGINT received. Shutting down gracefully...');
+      server.close(() => {
+        console.log('🔴 Server closed');
+        process.exit(0);
+      });
     });
   } catch (error) {
     console.error('Server initialization failed:', error);

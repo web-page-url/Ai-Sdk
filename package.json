@@ -7,9 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "build": "echo 'Build completed successfully'",
-    "dev": "node --watch src/index.js",
+    "dev": "nodemon src/index.js",
     "test": "node src/test.js",
-    "setup": "node install.js"
+    "setup": "node install.js",
+    "serve": "node src/index.js"
   },
   "keywords": [
     "ai",
