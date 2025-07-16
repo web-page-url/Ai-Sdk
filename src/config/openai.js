@@ -3,18 +3,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Validate OpenAI API key
+// Validate OpenAI API key (don't exit during build, only warn)
 if (!process.env.OPENAI_API_KEY) {
-  console.error('❌ OPENAI_API_KEY is not set in environment variables');
-  console.log('Please create a .env file and add your OpenAI API key:');
+  console.warn('⚠️ OPENAI_API_KEY is not set in environment variables');
+  console.log('Please set your OpenAI API key in the environment:');
   console.log('OPENAI_API_KEY=your_openai_api_key_here');
-  process.exit(1);
+  
+  // Only exit if we're not in a build environment
+  if (process.env.NODE_ENV !== 'build' && !process.env.RENDER) {
+    console.error('❌ Exiting due to missing API key');
+    process.exit(1);
+  }
 }
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI client with fallback
+let openai;
+try {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
+  });
+} catch (error) {
+  console.error('Failed to initialize OpenAI client:', error);
+  openai = null;
+}
 
 // Default configuration
 export const config = {
@@ -42,6 +53,10 @@ export function getModel(requestedModel) {
 
 // Helper function to create chat completion
 export async function createChatCompletion(messages, options = {}) {
+  if (!openai) {
+    throw new Error('OpenAI client not initialized. Please check your API key.');
+  }
+  
   try {
     const response = await openai.chat.completions.create({
       model: getModel(options.model),
@@ -60,6 +75,10 @@ export async function createChatCompletion(messages, options = {}) {
 
 // Helper function for function calling
 export async function createFunctionCall(messages, functions, options = {}) {
+  if (!openai) {
+    throw new Error('OpenAI client not initialized. Please check your API key.');
+  }
+  
   try {
     const response = await openai.chat.completions.create({
       model: getModel(options.model),

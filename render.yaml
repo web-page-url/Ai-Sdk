@@ -3,12 +3,14 @@ services:
     name: ai-sdk
     env: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: npm start
-    healthCheckPath: /
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: OPENAI_API_KEY
+        sync: false  # This will need to be set manually in Render dashboard
       - key: DEFAULT_MODEL
         value: gpt-4o-mini
       - key: MAX_TOKENS

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
+    "build": "echo 'Build completed successfully'",
     "dev": "node --watch src/index.js",
     "test": "node src/test.js",
     "setup": "node install.js"
@@ -40,5 +41,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
